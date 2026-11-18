@@ -115,9 +115,9 @@ func expiry(h http.Header, now time.Time) time.Time {
 	if when, err := http.ParseTime(h.Get("Expires")); err == nil && when.After(now) {
 		return when
 	}
-	// Missing/invalid upstream caching metadata: use a conservative short TTL
-	// to avoid repeated identical calls without inventing an official expiry.
-	return now.Add(5 * time.Minute)
+	// Without usable freshness headers, avoid repeating an identical global
+	// Locationforecast request sooner than MET Norway's three-hour guidance.
+	return now.Add(3 * time.Hour)
 }
 func (a *Adapter) store(key string, it cached) {
 	a.mu.Lock()
