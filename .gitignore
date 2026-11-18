@@ -1,0 +1,20 @@
+# Local credentials and private environment files
+.env
+.env.*
+!.env.example
+*.secret
+# Runtime artifacts, temporary test harnesses and generated output
+bin/
+dist/
+reports/
+*.log
+*.test
+*.exe
+*.bak
+.offline-test.*
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local autonomous acceptance runs, logs, state and secret-bearing inputs
+.uwa-testing/

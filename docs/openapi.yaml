@@ -1,0 +1,1061 @@
+# OpenAPI for the deterministic self-hosted UWA gateway. Model products are not observations.
+openapi: 3.1.0
+info:
+  title: Universal Weather API — Lean v1
+  version: 1.0.0
+  description: Lean v1 release profile only (APP_RELEASE_PROFILE=lean_v1). Deferred experimental routes and optional metrics are excluded. Self-hosted provider-normalizing API. The v1 weather endpoint represents observations; v1 forecast
+    represents model predictions. Free-tier upstream usage is deployment-restricted.
+servers:
+- url: http://127.0.0.1:8080
+  description: Local development; production requires operator-configured TLS ingress.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Meta:
+      type: object
+      properties:
+        request_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        provider:
+          type: string
+        cached:
+          type: boolean
+        fallback:
+          type: boolean
+        sources:
+          type: array
+          items:
+            type: string
+        attribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attribution'
+        warnings:
+          type: array
+          items:
+            type: string
+      required:
+      - request_id
+      - timestamp
+      - cached
+      - fallback
+    Attribution:
+      type: object
+      properties:
+        provider:
+          type: string
+        text:
+          type: string
+        url:
+          type: string
+          format: uri
+      required:
+      - provider
+      - text
+    Location:
+      type: object
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        formatted_address:
+          type: string
+        house_number:
+          type: string
+        street:
+          type: string
+        neighborhood:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        country_code:
+          type: string
+        postal_code:
+          type: string
+        timezone:
+          type: string
+        precision:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        result_type:
+          type: string
+      required:
+      - latitude
+      - longitude
+    Temperature:
+      type: object
+      properties:
+        value:
+          type: number
+        unit:
+          type: string
+          enum:
+          - celsius
+      required:
+      - value
+      - unit
+    Humidity:
+      type: object
+      properties:
+        value:
+          type: integer
+          minimum: 0
+          maximum: 100
+        unit:
+          type: string
+          enum:
+          - percent
+      required:
+      - value
+      - unit
+    SourceCondition:
+      type: object
+      properties:
+        provider:
+          type: string
+        code:
+          type: integer
+        text:
+          type: string
+        description:
+          type: string
+      required:
+      - provider
+      - code
+    Weather:
+      type: object
+      properties:
+        schema_version:
+          type: string
+          const: weather.v1
+        location:
+          $ref: '#/components/schemas/Location'
+        temperature:
+          $ref: '#/components/schemas/Temperature'
+        humidity:
+          $ref: '#/components/schemas/Humidity'
+        condition:
+          type: string
+          enum: &id001
+          - clear
+          - partly_cloudy
+          - cloudy
+          - rain
+          - snow
+          - thunderstorm
+          - fog
+          - unknown
+        source_condition:
+          $ref: '#/components/schemas/SourceCondition'
+        observed_at:
+          type: string
+          format: date-time
+      required:
+      - schema_version
+      - location
+      - temperature
+      - condition
+      - observed_at
+    LocationResponse:
+      type: object
+      properties:
+        schema_version:
+          type: string
+          const: location.v1
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+      required:
+      - schema_version
+      - results
+    ForecastPoint:
+      type: object
+      properties:
+        valid_at:
+          type: string
+          format: date-time
+        temperature:
+          $ref: '#/components/schemas/Temperature'
+        humidity:
+          $ref: '#/components/schemas/Humidity'
+        condition:
+          type: string
+          enum: *id001
+        source_condition:
+          type: string
+      required:
+      - valid_at
+      - temperature
+      - condition
+    Forecast:
+      type: object
+      properties:
+        schema_version:
+          type: string
+          const: forecast.v1
+        data_kind:
+          type: string
+          const: model_forecast
+        location:
+          $ref: '#/components/schemas/Location'
+        issued_at:
+          type: string
+          format: date-time
+        points:
+          type: array
+          minItems: 1
+          maxItems: 168
+          items:
+            $ref: '#/components/schemas/ForecastPoint'
+      required:
+      - schema_version
+      - data_kind
+      - location
+      - points
+    ErrorDetail:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        status:
+          type: integer
+        request_id:
+          type: string
+        retryable:
+          type: boolean
+      required:
+      - code
+      - message
+      - status
+      - retryable
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+      required:
+      - error
+    DatasetResult:
+      type: object
+      description: A product's canonical versioned data and its own provider provenance.
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/Weather'
+          - $ref: '#/components/schemas/Forecast'
+          - $ref: '#/components/schemas/DailyForecast'
+          - $ref: '#/components/schemas/LocationResponse'
+          - $ref: '#/components/schemas/AstronomyV1'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - meta
+    DatasetFailure:
+      type: object
+      properties:
+        status: {type: integer}
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+      required:
+      - status
+      - error
+    DatasetBundle:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DatasetResult'
+        errors:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DatasetFailure'
+        meta:
+          type: object
+          properties:
+            request_id: {type: string}
+            timestamp: {type: string, format: date-time}
+            partial: {type: boolean}
+          required: [request_id, timestamp, partial]
+      required: [data, meta]
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+        version:
+          type: string
+        uptime:
+          type: string
+        checks:
+          type: object
+          properties: {}
+      required:
+      - status
+    WeatherEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Weather'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - meta
+    GeocodeEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LocationResponse'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - meta
+    ForecastEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Forecast'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - meta
+    HealthEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Health'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      required:
+      - data
+      - meta
+    DailyForecastDay:
+      type: object
+      description: Minimum/maximum of returned forecast samples; never a confirmed full-day high/low.
+      required:
+      - date_utc
+      - minimum_sampled_celsius
+      - maximum_sampled_celsius
+      - sample_count
+      - first_valid_at
+      - last_valid_at
+      properties:
+        date_utc:
+          type: string
+          format: date
+        minimum_sampled_celsius:
+          type: number
+        maximum_sampled_celsius:
+          type: number
+        sample_count:
+          type: integer
+          minimum: 1
+        first_valid_at:
+          type: string
+          format: date-time
+        last_valid_at:
+          type: string
+          format: date-time
+    DailyForecast:
+      type: object
+      required:
+      - schema_version
+      - data_kind
+      - aggregation_basis
+      - timezone
+      - location
+      - days
+      properties:
+        schema_version:
+          type: string
+          const: forecast.daily.v1
+        data_kind:
+          type: string
+          const: derived_model_forecast
+        aggregation_basis:
+          type: string
+          const: available_sampled_points_only
+        timezone:
+          type: string
+          const: UTC
+        location:
+          $ref: '#/components/schemas/Location'
+        issued_at:
+          type: string
+          format: date-time
+        days:
+          type: array
+          minItems: 1
+          maxItems: 7
+          items:
+            $ref: '#/components/schemas/DailyForecastDay'
+    DailyForecastEnvelope:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/DailyForecast'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    AirQualityConcentration:
+      type: object
+      required:
+      - value
+      - unit
+      properties:
+        value:
+          type: number
+          minimum: 0
+        unit:
+          type: string
+          const: µg/m³
+    AirQualityPoint:
+      type: object
+      required:
+      - valid_at
+      - pm2_5
+      properties:
+        valid_at:
+          type: string
+          format: date-time
+        pm2_5:
+          $ref: '#/components/schemas/AirQualityConcentration'
+        pm10:
+          $ref: '#/components/schemas/AirQualityConcentration'
+        ozone:
+          $ref: '#/components/schemas/AirQualityConcentration'
+        nitrogen_dioxide:
+          $ref: '#/components/schemas/AirQualityConcentration'
+        sulphur_dioxide:
+          $ref: '#/components/schemas/AirQualityConcentration'
+        carbon_monoxide:
+          $ref: '#/components/schemas/AirQualityConcentration'
+    AirQuality:
+      type: object
+      required:
+      - schema_version
+      - data_kind
+      - model_source
+      - location
+      - points
+      properties:
+        schema_version:
+          type: string
+          const: air_quality.v1
+        data_kind:
+          type: string
+          const: model_forecast
+        model_source:
+          type: string
+          const: CAMS
+        location:
+          $ref: '#/components/schemas/Location'
+        points:
+          type: array
+          minItems: 1
+          maxItems: 24
+          items:
+            $ref: '#/components/schemas/AirQualityPoint'
+    AirQualityEnvelope:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/AirQuality'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    HistoricalSample:
+      type: object
+      required: [valid_at, temperature_c]
+      properties:
+        valid_at: {type: string, format: date-time, description: ERA5 reanalysis valid time, not a station observation timestamp}
+        temperature_c: {type: number}
+        humidity_percent: {type: number, minimum: 0, maximum: 100}
+        precipitation_mm: {type: number, minimum: 0}
+    HistoryV1:
+      type: object
+      required: [schema_version, data_kind, model, location, points]
+      properties:
+        schema_version: {type: string, const: history.v1}
+        data_kind: {type: string, const: historical_reanalysis}
+        model: {type: string, const: ERA5}
+        location: { $ref: '#/components/schemas/Location' }
+        points:
+          type: array
+          items: { $ref: '#/components/schemas/HistoricalSample' }
+    AstronomyV1:
+      type: object
+      required: [schema_version, data_kind, date, timezone, location, sun_status, sunrise, sunset, solar_noon, moonrise, moonset]
+      properties:
+        schema_version: {type: string, const: astronomy.v1}
+        data_kind: {type: string, const: astronomical_calculation}
+        date: {type: string, format: date}
+        timezone: {type: string}
+        location: { $ref: '#/components/schemas/Location' }
+        sun_status: {type: string, enum: [normal, midnight_sun, polar_night]}
+        sunrise: {type: [string, 'null'], format: date-time}
+        sunset: {type: [string, 'null'], format: date-time}
+        solar_noon: {type: [string, 'null'], format: date-time}
+        moonrise: {type: [string, 'null'], format: date-time}
+        moonset: {type: [string, 'null'], format: date-time}
+        moon_phase: {type: string}
+    MarineV1:
+      type: object
+      required: [schema_version, data_kind, model_grid, points]
+      properties:
+        schema_version: {type: string, const: marine.v1}
+        data_kind: {type: string, const: marine_model_forecast}
+        model_grid: { $ref: '#/components/schemas/Location' }
+        points:
+          type: array
+          items:
+            type: object
+            required: [valid_at, wave_height_m]
+            properties:
+              valid_at: {type: string, format: date-time}
+              wave_height_m: {type: number, minimum: 0}
+              wave_period_s: {type: number, minimum: 0}
+              wave_direction_degrees: {type: number, minimum: 0, maximum: 360}
+    AlertsV1:
+      type: object
+      required: [schema_version, data_kind, location, alerts]
+      properties:
+        schema_version: {type: string, const: alerts.v1}
+        data_kind: {type: string, const: official_active_alerts}
+        location: { $ref: '#/components/schemas/Location' }
+        alerts:
+          type: array
+          items:
+            type: object
+            required: [id, event, expires]
+            properties:
+              id: {type: string}
+              event: {type: string}
+              headline: {type: string}
+              severity: {type: string}
+              status: {type: string}
+              urgency: {type: string}
+              certainty: {type: string}
+              area_description: {type: string}
+              effective: {type: string, format: date-time}
+              expires: {type: string, format: date-time}
+              description: {type: string}
+              instruction: {type: string}
+paths:
+  /v1/datasets:
+    get:
+      summary: Request several independently routed datasets for one location.
+      description: Every requested dataset requires its own read scope. Results retain each product's versioned data and source metadata. A partial response has status 207 and per-dataset errors; all failures return 503. Maximum eight distinct datasets. For a place-name bundle, location and q are aliases mapped to each product's accepted parameter; conflicting coordinates and names remain invalid. Prefix product-specific options with the requested dataset name, for example geocode.limit=1 or forecast-daily.days=3; each option is sent only to that dataset.
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      parameters:
+      - name: datasets
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Comma-separated list from weather, forecast, forecast-daily, geocode, astronomy.
+      - name: lat
+        in: query
+        schema: {type: number}
+      - name: lon
+        in: query
+        schema: {type: number}
+      - name: location
+        in: query
+        schema: {type: string}
+      - name: q
+        in: query
+        schema: {type: string}
+        description: Forward geocoding query.
+      responses:
+        '200':
+          description: All requested datasets delivered.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DatasetBundle'}
+        '207':
+          description: Some datasets delivered; errors identify unavailable datasets.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DatasetBundle'}
+        '400': {description: Invalid dataset list, shared location or dataset-specific option routing.}
+        '401': {description: Authentication required.}
+        '403': {description: Missing at least one requested read scope.}
+        '503':
+          description: No requested dataset could be delivered.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DatasetBundle'}
+  /v1/weather:
+    get:
+      summary: Current weather observations; location text OR coordinates, not both.
+      description: Requires weather:read. Query aliases are supported by the implementation.
+      security: &id002
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      parameters:
+      - name: location
+        in: query
+        description: 'Place query text (aliases: city,q)'
+        required: false
+        schema:
+          type: string
+          maxLength: 500
+      - &id003
+        name: lat
+        in: query
+        description: Latitude, with lon; alternative aliases latitude/longitude.
+        required: false
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - &id004
+        name: lon
+        in: query
+        description: Longitude, with lat; alternative aliases latitude/longitude.
+        required: false
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - &id005
+        name: provider
+        in: query
+        description: Optional exact provider ID; hard selection constraint.
+        required: false
+        schema:
+          type: string
+      - &id006
+        name: policy
+        in: query
+        description: Provider routing strategy.
+        required: false
+        schema:
+          type: string
+          enum:
+          - AVAILABILITY_FIRST
+          - LATENCY_FIRST
+          - COST_FIRST
+          - PRIORITY_FIRST
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherEnvelope'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: No eligible providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '504':
+          description: Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/forecast:
+    get:
+      summary: Modeled forecasts only; coordinates required.
+      description: Requires forecast:read. Query aliases are supported by the implementation.
+      security: *id002
+      parameters:
+      - *id003
+      - *id004
+      - *id005
+      - *id006
+      - name: points
+        in: query
+        required: false
+        description: Maximum returned forecast time steps, not an assumed number of hours; provider availability
+          may be shorter.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 168
+          default: 24
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastEnvelope'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: No eligible providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '504':
+          description: Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/geocode:
+    get:
+      summary: Forward geocoding (q) OR reverse geocoding (lat/lon).
+      description: Requires geocode:read. Query aliases are supported by the implementation.
+      security: *id002
+      parameters:
+      - name: q
+        in: query
+        description: 'Place search (alias: address)'
+        required: false
+        schema:
+          type: string
+          maxLength: 500
+      - *id003
+      - *id004
+      - name: limit
+        in: query
+        description: Maximum result count, forward requests only.
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: country
+        in: query
+        description: ISO 3166-1 alpha-2 country filter, forward requests only.
+        required: false
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 2
+      - *id005
+      - *id006
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeEnvelope'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: No eligible providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '504':
+          description: Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /health:
+    get:
+      summary: Process health
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthEnvelope'
+  /readiness:
+    get:
+      summary: Service readiness
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthEnvelope'
+        '503':
+          description: Not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /liveness:
+    get:
+      summary: Process liveness
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthEnvelope'
+  /v1/forecast/daily:
+    get:
+      summary: UTC daily min/max of available forecast sample points; never measured weather or vendor daily
+        extrema.
+      description: Requires forecast:read. Reuses the existing validated hourly forecast and its upstream quota.
+        Partial UTC days are possible.
+      security:
+      - ApiKeyAuth: []
+      - BearerAuth: []
+      parameters:
+      - name: lat
+        in: query
+        description: Latitude, with lon; alternative aliases latitude/longitude.
+        required: false
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - name: lon
+        in: query
+        description: Longitude, with lat; alternative aliases latitude/longitude.
+        required: false
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - name: provider
+        in: query
+        description: Optional exact provider ID; hard selection constraint.
+        required: false
+        schema:
+          type: string
+      - name: policy
+        in: query
+        description: Provider routing strategy.
+        required: false
+        schema:
+          type: string
+          enum:
+          - AVAILABILITY_FIRST
+          - LATENCY_FIRST
+          - COST_FIRST
+          - PRIORITY_FIRST
+      - name: days
+        in: query
+        required: false
+        description: Maximum distinct UTC dates summarized (default 7).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 7
+          default: 7
+      responses:
+        '200':
+          description: Canonical API envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyForecastEnvelope'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: No eligible providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '504':
+          description: Timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/astronomy:
+    get:
+      summary: Calculated astronomical events with nullable polar sunrise and sunset
+      description: Requires astronomy:read. New adapters are disabled by default and require reviewed provider policy and quotas.
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema: {type: number, minimum: -90, maximum: 90}
+        - name: lon
+          in: query
+          required: true
+          schema: {type: number, minimum: -180, maximum: 180}
+        - name: provider
+          in: query
+          required: false
+          schema: {type: string}
+        - name: policy
+          in: query
+          required: false
+          schema: {type: string, enum: [AVAILABILITY_FIRST, LATENCY_FIRST, COST_FIRST, PRIORITY_FIRST]}
+        - name: date
+          in: query
+          required: true
+          description: Explicit local calendar date YYYY-MM-DD
+          schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Validated canonical data with source attribution and fallback metadata.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: { $ref: '#/components/schemas/AstronomyV1' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '400': {description: Invalid request}
+        '401': {description: Missing or invalid API key}
+        '403': {description: Missing astronomy:read scope}
+        '429': {description: Client or upstream quota limit}
+        '502': {description: Invalid or failed upstream response}
+        '503': {description: No policy-eligible providers}
+        '504': {description: Upstream request deadline}

@@ -1,0 +1,17 @@
+[
+  {
+    "place_id": "334455",
+    "lat": "-33.8688",
+    "lon": "151.2093",
+    "display_name": "Sydney NSW, Australia",
+    "class": "place",
+    "type": "city",
+    "importance": 0.92,
+    "address": {
+      "city": "Sydney",
+      "state": "New South Wales",
+      "country": "Australia",
+      "country_code": "au"
+    }
+  }
+]

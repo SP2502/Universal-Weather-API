@@ -1,0 +1,12 @@
+.git
+.uwa-testing
+**/.env
+**/.env.*
+!**/.env.example
+*.secret
+*.log
+*.exe
+*.bak
+bin
+dist
+reports

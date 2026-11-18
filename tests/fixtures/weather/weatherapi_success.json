@@ -1,0 +1,18 @@
+{
+  "location": {
+    "name": "Tokyo",
+    "country": "Japan",
+    "lat": 35.6895,
+    "lon": 139.6917,
+    "tz_id": "Asia/Tokyo"
+  },
+  "current": {
+    "temp_c": 26.8,
+    "humidity": 55,
+    "condition": {
+      "text": "Partly cloudy",
+      "code": 1003
+    },
+    "last_updated_epoch": 1724340000
+  }
+}

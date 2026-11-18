@@ -1,0 +1,17 @@
+[
+  {
+    "place_id": "liq-991",
+    "lat": "48.8566",
+    "lon": "2.3522",
+    "display_name": "Paris, Île-de-France, France",
+    "class": "place",
+    "type": "city",
+    "importance": 0.98,
+    "address": {
+      "city": "Paris",
+      "state": "Île-de-France",
+      "country": "France",
+      "country_code": "fr"
+    }
+  }
+]

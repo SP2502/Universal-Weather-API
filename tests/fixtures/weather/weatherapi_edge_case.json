@@ -1,0 +1,17 @@
+{
+  "location": {
+    "name": "Reykjavik",
+    "country": "Iceland",
+    "lat": 64.1466,
+    "lon": -21.9426,
+    "tz_id": "Atlantic/Reykjavik"
+  },
+  "current": {
+    "temp_c": -12.4,
+    "condition": {
+      "text": "Moderate or heavy snow showers",
+      "code": 1225
+    },
+    "last_updated_epoch": 1724340000
+  }
+}

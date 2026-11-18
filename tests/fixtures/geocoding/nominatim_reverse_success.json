@@ -1,0 +1,17 @@
+{
+  "place_id": 2002,
+  "lat": "51.5074",
+  "lon": "-0.1278",
+  "display_name": "10 Downing Street, London, SW1A 2AA, United Kingdom",
+  "class": "building",
+  "type": "yes",
+  "importance": 0.85,
+  "address": {
+    "house_number": "10",
+    "road": "Downing Street",
+    "city": "London",
+    "postcode": "SW1A 2AA",
+    "country": "United Kingdom",
+    "country_code": "gb"
+  }
+}

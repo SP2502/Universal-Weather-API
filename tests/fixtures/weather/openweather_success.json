@@ -1,0 +1,19 @@
+{
+  "coord": {
+    "lon": -0.1278,
+    "lat": 51.5074
+  },
+  "weather": [
+    {
+      "id": 800,
+      "main": "Clear",
+      "description": "clear sky"
+    }
+  ],
+  "main": {
+    "temp": 295.65,
+    "humidity": 60
+  },
+  "name": "London",
+  "dt": 1724340000
+}

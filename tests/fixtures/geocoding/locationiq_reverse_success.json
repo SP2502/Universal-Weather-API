@@ -1,0 +1,15 @@
+{
+  "place_id": "liq-992",
+  "lat": "48.8584",
+  "lon": "2.2945",
+  "display_name": "Eiffel Tower, Paris, France",
+  "class": "tourism",
+  "type": "attraction",
+  "importance": 0.99,
+  "address": {
+    "name": "Eiffel Tower",
+    "city": "Paris",
+    "country": "France",
+    "country_code": "fr"
+  }
+}

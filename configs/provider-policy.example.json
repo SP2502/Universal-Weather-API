@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "provider_id": "openweather",
+      "enabled": true,
+      "review_status": "legacy",
+      "products": [
+        "current_weather"
+      ],
+      "deployment_uses": [
+        "any"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://openweathermap.org/price",
+      "notes": "Existing BYOK adapter. Legacy status is not legal certification; review terms per deployment."
+    },
+    {
+      "provider_id": "weatherapi",
+      "enabled": true,
+      "review_status": "legacy",
+      "products": [
+        "current_weather"
+      ],
+      "deployment_uses": [
+        "any"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://www.weatherapi.com/pricing.aspx",
+      "notes": "Existing BYOK adapter. Review terms per deployment."
+    },
+    {
+      "provider_id": "locationiq",
+      "enabled": true,
+      "review_status": "legacy",
+      "products": [
+        "forward_geocoding",
+        "reverse_geocoding"
+      ],
+      "deployment_uses": [
+        "any"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://locationiq.com/pricing",
+      "notes": "Existing BYOK adapter. Operator responsible for plan terms."
+    },
+    {
+      "provider_id": "nominatim",
+      "enabled": false,
+      "review_status": "research_only",
+      "products": [
+        "forward_geocoding",
+        "reverse_geocoding"
+      ],
+      "deployment_uses": [
+        "internal"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://operations.osmfoundation.org/policies/nominatim/",
+      "notes": "Disabled: public instance is not appropriate as a general-purpose multi-user API gateway."
+    },
+    {
+      "provider_id": "geoapify",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "forward_geocoding",
+        "reverse_geocoding"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://apidocs.geoapify.com/docs/geocoding/forward-geocoding/",
+      "notes": "Requires GEOAPIFY_API_KEY and conservative daily/request rate quotas."
+    },
+    {
+      "provider_id": "met_norway",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "hourly_forecast"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://api.met.no/weatherapi/locationforecast/2.0/documentation",
+      "notes": "Forecast model only; identifying user agent and source attribution required."
+    },
+    {
+      "provider_id": "open_meteo_forecast",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "hourly_forecast"
+      ],
+      "deployment_uses": [
+        "noncommercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://open-meteo.com/en/pricing",
+      "notes": "Hosted free access is noncommercial only; shares service allowance with geocoding."
+    },
+    {
+      "provider_id": "open_meteo_geocoding",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "forward_geocoding"
+      ],
+      "deployment_uses": [
+        "noncommercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://open-meteo.com/en/docs/geocoding-api",
+      "notes": "Forward only; hosted free noncommercial allowance shared with forecast."
+    },
+    {
+      "provider_id": "us_nws",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "hourly_forecast"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "countries",
+        "countries": [
+          "US"
+        ]
+      },
+      "source_url": "https://www.weather.gov/documentation/services-web-api",
+      "notes": "Requires operator-reviewed country polygons; NWS User-Agent, US forecast only."
+    },
+    {
+      "provider_id": "bright_sky",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "hourly_forecast"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "countries",
+        "countries": [
+          "DE"
+        ]
+      },
+      "source_url": "https://brightsky.dev/docs/",
+      "notes": "Germany only by default. Forecast sources <=25 km; no inferred global coverage."
+    },
+    {
+      "provider_id": "open_meteo_history",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "historical_reanalysis"
+      ],
+      "deployment_uses": [
+        "noncommercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://open-meteo.com/en/docs/historical-weather-api",
+      "notes": "ERA5 global historical reanalysis; NOT measured station history. Hosted non-commercial usage only. Operator supplies shared quota."
+    },
+    {
+      "provider_id": "open_meteo_marine",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "marine_forecast"
+      ],
+      "deployment_uses": [
+        "noncommercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://open-meteo.com/en/docs/marine-weather-api",
+      "notes": "Marine model grids only. Reject distant sea cells and null wave heights. Hosted non-commercial usage only."
+    },
+    {
+      "provider_id": "sunrise_sunset",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "astronomy"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://sunrise-sunset.org/api",
+      "notes": "Astronomical calculation, not weather observation; mandatory upstream attribution."
+    },
+    {
+      "provider_id": "us_nws_alerts",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "active_alerts"
+      ],
+      "deployment_uses": [
+        "internal",
+        "noncommercial",
+        "commercial"
+      ],
+      "coverage": {
+        "kind": "countries",
+        "countries": [
+          "US"
+        ]
+      },
+      "source_url": "https://www.weather.gov/documentation/services-web-api",
+      "notes": "US-only official active alerts. Exact country polygon index and identifying User-Agent required."
+    },
+    {
+      "provider_id": "open_meteo_air_quality",
+      "enabled": false,
+      "review_status": "operator_approved",
+      "products": [
+        "air_quality_forecast"
+      ],
+      "deployment_uses": [
+        "noncommercial"
+      ],
+      "coverage": {
+        "kind": "global"
+      },
+      "source_url": "https://open-meteo.com/en/docs/air-quality-api",
+      "notes": "Existing 07C CAMS model forecast; hosted free use noncommercial only; shared quota group required."
+    }
+  ]
+}
