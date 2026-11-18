@@ -26,3 +26,5 @@ Other adapters and deferred products may appear in the source or [experimental s
 The gateway filters providers by product, coverage, policy, credentials, quota, and health, then orders them by deterministic priority. It bounds HTTP attempts and response validation. A failed source can fall back to another eligible source within the remaining time and budget. No source, no entitlement, exhausted quota, or invalid data can yield a clear error instead of a weather result. Ordering is not a claim of meteorological accuracy.
 
 Responses include provider and fallback metadata; source attribution must be displayed by client products as required by the upstream terms. See [configuration](configuration.md), [API reference](api-reference.md), and [release status](release-status.md).
+
+For Docker environment variables and bounded local smoke tests, see [provider testing](provider-testing.md).
