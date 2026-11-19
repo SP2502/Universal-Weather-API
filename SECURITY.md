@@ -1,12 +1,10 @@
 # Security policy — Universal Weather API
 
-> **Status: pre-release candidate; production security acceptance not complete.** This file documents the intended controls and the remaining responsibilities. It is not a penetration-test certificate.
+> **Status: public source preview; production security acceptance not complete.** This file documents the intended controls and the remaining responsibilities. It is not a penetration-test certificate.
 
 ## Reporting vulnerabilities
 
-**Before public GitHub release, the maintainer must configure a real private security-reporting channel.** No response SLA or external mailbox is verified for this source package. Do not send confidential reports to a guessed domain/email.
-
-Once the repository is public, enable and prominently link GitHub **private vulnerability reporting / security advisories** or provide a separately verified dedicated security contact. Keep exploit details private until a coordinated fix is available. The maintainer must update this section with the actual reporting URL and response expectations before publication.
+Use [GitHub private vulnerability reporting](https://github.com/SP2502/Universal-Weather-API/security/advisories/new) to report a suspected security issue. This channel is enabled for the public repository. Include the affected version, reproduction steps, and impact if known. Keep exploit details private until a coordinated fix is available. No response-time guarantee is offered.
 
 ## Security boundaries in source
 
@@ -20,7 +18,7 @@ Once the repository is public, enable and prominently link GitHub **private vuln
 - Application logs redact known sensitive attribute names and common bearer/query key formats. Log redaction is defense-in-depth, not a substitute for secret scanning or secure operational access.
 - The lean-v1 router excludes deferred air-quality, marine, historical and alert endpoints in production/staging; experimental code is not an active release feature.
 
-## Before release
+## Before production deployment
 
 - Conduct authorized threat modeling, static analysis, dependency and container vulnerability scanning using a supported Go patch release.
 - Verify actual PostgreSQL and Redis failure behavior; two-instance rate limits and auth-key rotation/revocation.

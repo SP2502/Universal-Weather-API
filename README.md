@@ -1,10 +1,12 @@
 # Universal Weather API
 
+[![CI](https://github.com/SP2502/Universal-Weather-API/actions/workflows/ci.yml/badge.svg)](https://github.com/SP2502/Universal-Weather-API/actions/workflows/ci.yml)
+
 **A self-hosted Go API for weather and location data.** Connect your own upstream provider accounts, then give your clients one consistent, versioned API. UWA selects eligible providers using explicit rules, validates their responses, and can fall back to another configured source. It uses no LLM or hosted UWA account.
 
 [Project website](https://universalweather.vercel.app/) · [Quickstart](docs/quickstart.md) · [Provider coverage](docs/provider-guide.md) · [API reference](docs/api-reference.md) · [Contribute](CONTRIBUTING.md)
 
-> **Release status:** The source candidate passed local tests with real PostgreSQL, Redis, selected live providers, native Windows and Ubuntu services, Docker, and local HTTPS. Public deployment checks remain. [See exactly what passed and what is left](docs/release-status.md).
+> **Release status:** This public source preview passed local tests with real PostgreSQL, Redis, selected live providers, native Windows and Ubuntu services, Docker, and local HTTPS. Production deployment checks remain. [See exactly what passed and what is left](docs/release-status.md).
 
 ## What it serves
 
