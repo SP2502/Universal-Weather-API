@@ -2,6 +2,8 @@
 
 **A self-hosted Go API for weather and location data.** Connect your own upstream provider accounts, then give your clients one consistent, versioned API. UWA selects eligible providers using explicit rules, validates their responses, and can fall back to another configured source. It uses no LLM or hosted UWA account.
 
+[Project website](https://universalweather.vercel.app/) · [Quickstart](docs/quickstart.md) · [Provider coverage](docs/provider-guide.md) · [API reference](docs/api-reference.md) · [Contribute](CONTRIBUTING.md)
+
 > **Release status:** The source candidate passed local tests with real PostgreSQL, Redis, selected live providers, native Windows and Ubuntu services, Docker, and local HTTPS. Public deployment checks remain. [See exactly what passed and what is left](docs/release-status.md).
 
 ## What it serves
@@ -18,6 +20,18 @@
 `/health`, `/liveness`, and `/readiness` are public probes. Metrics require an explicit loopback-only setting and bearer token. The [lean v1 OpenAPI specification](docs/openapi.yaml) defines the public contract. Air quality, history, marine, alerts, and other experimental routes are outside the lean v1 release profile.
 
 **Availability depends on your configuration.** OpenWeather and WeatherAPI adapters provide current weather; LocationIQ provides geocoding. Forecasts need a separately enabled and eligible forecast provider. An API key by itself does not enable a provider: its policy, region, credentials, budget, and permitted use must also be configured. UWA does not promise that its highest-ranked source is meteorologically the most accurate.
+
+## Bring your own providers
+
+| Data | Available adapters |
+| --- | --- |
+| Current weather | OpenWeather, WeatherAPI |
+| Forecast | Open-Meteo, MET Norway, Bright Sky (Germany), US NWS (US) |
+| Location search | LocationIQ, Geoapify, Open-Meteo geocoding |
+| Air quality, history, marine | Open-Meteo experimental adapters |
+| Astronomy and alerts | Sunrise-Sunset; US NWS alerts (US, experimental) |
+
+These adapters passed bounded local live checks in the [noncommercial test profile](docs/provider-guide.md#local-live-coverage-19-november-2026). Some are outside the lean v1 release profile. Each source needs its own approved policy, usage budget, and any required key or contact. The hosted Open-Meteo free API is for noncommercial use; provider data rights are separate from this repository's MIT license.
 
 ## Try it locally
 
