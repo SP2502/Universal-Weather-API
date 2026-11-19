@@ -63,7 +63,12 @@ func (h *ExtendedHandler) serve(w http.ResponseWriter, r *http.Request, capabili
 		api.WriteError(w, 503, "PROVIDER_NOT_AVAILABLE", "No eligible provider for this location and product", id, true)
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 12*time.Second)
+	budget := 12 * time.Second
+	if capability == "alerts" {
+		// NWS active alerts can take longer than the other extended products.
+		budget = 35 * time.Second
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), budget)
 	defer cancel()
 	ctx = reliability.WithQuotaProduct(ctx, product)
 	data, meta, err := reliability.ExecuteWithFallback[any](ctx, h.executor, selected, reliability.DefaultRetryPolicy(), func(call context.Context, p provider.Provider) (any, error) {

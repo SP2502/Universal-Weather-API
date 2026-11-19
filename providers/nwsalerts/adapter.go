@@ -2,6 +2,7 @@ package nwsalerts
 
 import (
 	"context"
+	"github.com/universal-api/platform/internal/http/client"
 	"github.com/universal-api/platform/internal/provider"
 	"github.com/universal-api/platform/providers/producthttp"
 	"net/http"
@@ -21,7 +22,7 @@ func NewAdapter(agent, base string) *Adapter {
 	if base == "" {
 		base = "https://api.weather.gov"
 	}
-	return &Adapter{agent: agent, client: producthttp.Client(), manifest: provider.Manifest{ID: "us_nws_alerts", Name: "US NWS Active Weather Alerts", Version: "v1", Capabilities: []string{"alerts"}, BaseURL: strings.TrimRight(base, "/"), Timeout: 6 * time.Second, FallbackPriority: 2, Status: provider.StatusActive, Attribution: provider.Attribution{Required: true, Text: "Official alerts from the US National Weather Service", URL: "https://www.weather.gov/"}}}
+	return &Adapter{agent: agent, client: client.NewHTTPClient(30 * time.Second), manifest: provider.Manifest{ID: "us_nws_alerts", Name: "US NWS Active Weather Alerts", Version: "v1", Capabilities: []string{"alerts"}, BaseURL: strings.TrimRight(base, "/"), Timeout: 30 * time.Second, FallbackPriority: 2, Status: provider.StatusActive, Attribution: provider.Attribution{Required: true, Text: "Official alerts from the US National Weather Service", URL: "https://www.weather.gov/"}}}
 }
 func (a *Adapter) Manifest() provider.Manifest            { return a.manifest }
 func (a *Adapter) WithHTTPClient(c *http.Client) *Adapter { a.client = c; return a }
